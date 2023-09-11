@@ -1,0 +1,24 @@
+project: feast_proto
+# By default, the registry is a file (but can be turned into a more scalable SQL-backed registry)
+registry:
+    registry_type: sql
+    path: postgresql://feast:feast@postgres_db:5432/feast
+    cache_ttl_seconds: 60
+# The provider primarily specifies default offline / online stores & storing the registry in a given cloud
+provider: local
+
+offline_store:
+    type: file
+online_store:
+    type: postgres
+    host: postgres_db
+    port: 5432
+    database: feast
+    # db_schema: DB_SCHEMA
+    user: feast
+    password: feast
+    # sslmode: verify-ca
+    # sslkey_path: /path/to/client-key.pem
+    # sslcert_path: /path/to/client-cert.pem
+    # sslrootcert_path: /path/to/server-ca.pem
+entity_key_serialization_version: 2

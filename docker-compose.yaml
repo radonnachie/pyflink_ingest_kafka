@@ -1,0 +1,72 @@
+version: '2'
+services:
+  # KAFKA
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+  kafka_broker:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_broker:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    container_name: kafka_broker
+  kafka_producer:
+    build:
+      context: kafka_producer
+      dockerfile: ../kafka_client.Dockerfile
+    depends_on:
+      - kafka_broker
+    container_name: kafka_producer
+  
+  # FEAST infrastructure
+  postgres_db:
+    image: "postgres"
+    healthcheck:
+      test: pg_isready --host postgres_db --port 5432 --username feast --dbname feast
+      interval: 2s
+      timeout: 10s
+      retries: 5
+    environment:
+      - POSTGRES_USER=feast
+      - POSTGRES_PASSWORD=feast
+      - POSTGRES_DB=feast
+
+  # FLINK
+  jobmanager:
+    build:
+      context: flink_processor
+    volumes:
+      - ./flink_processor:/work
+    hostname: "jobmanager"
+    expose:
+      - "6123"
+    ports:
+      - "8081:8081"
+    command: jobmanager
+  #   command: /opt/flink/bin/flink run -py /work/run.py -d
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+  taskmanager:
+    build:
+      context: flink_processor
+    depends_on:
+      - jobmanager
+    command: taskmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
