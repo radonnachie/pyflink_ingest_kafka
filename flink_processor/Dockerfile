@@ -20,7 +20,7 @@ rm -rf /var/lib/apt/lists/*
 # install PyFlink
 
 COPY apache-flink*.tar.gz /
-RUN pip3 install --upgrade pip && pip3 install /apache-flink-libraries*.tar.gz && pip3 install /apache-flink*.tar.gz && pip3 install kafka-python feast[postgres]
+RUN pip3 install --upgrade pip && pip3 install /apache-flink-libraries*.tar.gz && pip3 install /apache-flink*.tar.gz && pip3 install kafka-python
 
 COPY kafka_2.12-*/libs/*.jar /opt/flink/lib/
 

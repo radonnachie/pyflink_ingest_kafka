@@ -1,0 +1,13 @@
+{
+  "push_source_name": "whcaent_ent_push_source",
+  "df": {
+    "entity_no": [999998, 999999],
+    "title": ["Mrs", "Mr"],
+    "firstname": ["Jane", "John"],
+    "surname": ["Doe", "Doe"],
+    "date_of_birth": [36000, 36000],
+    "sys_eff_to": [3600000, 3600000],
+    "sys_eff_from": [7200000, 7200000]
+  },
+  "to": "online"
+}

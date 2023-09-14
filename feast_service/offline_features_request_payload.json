@@ -1,0 +1,12 @@
+{
+  "features": [
+    "whcaent_ent:firstname"
+  ],
+  "entity_df": {
+    "entity_no": [
+      1,
+      2
+    ],
+    "sys_eff_from": "2000-01-01 12:00:00"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "features": [
+    "whcaent_ent:firstname"
+  ],
+  "entities": {
+    "entity_no": [
+      1,
+      2
+    ]
+  }
+}

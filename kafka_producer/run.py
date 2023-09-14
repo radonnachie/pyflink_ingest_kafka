@@ -42,24 +42,34 @@ except Exception as e:
 start = time.time()
 date_zero = datetime(2000, 1, 1, 12, 00, 00)
 iteration = 0
+
+entities = [
+    {
+        'entity_no': entity_no,
+        'title': ["Mr", "Mrs", "Ms", "Dr"][int(uniform(0, 4)//1)],
+        'firstname': base64.b64encode(os.urandom(int(uniform(2, 20)//1))).decode('ascii'),
+        'surname': base64.b64encode(os.urandom(int(uniform(2, 20)//1))).decode('ascii'),
+        # turns out that feast expects datetime panda fields to be timestamps
+        'date_of_birth': int((date_zero - timedelta(days=uniform(18, 65)*365)).timestamp()),
+        # 'date_of_birth': str(date_zero - timedelta(days=uniform(18, 65)*365)),
+    }
+    for entity_no in range(2000)
+]
+
 while True:
 
     event_date_time = date_zero + timedelta(days=365.25*iteration)
-    for entity_no in range(2000):
-        entity = {
-            'entity_no': entity_no,
-            'title': ["Mr", "Mrs", "Ms", "Dr"][int(uniform(0, 4)//1)],
-            'firstname': base64.b64encode(os.urandom(int(uniform(2, 20)//1))).decode('ascii'),
-            'surname': base64.b64encode(os.urandom(int(uniform(2, 20)//1))).decode('ascii'),
-            'date_of_birth': date_zero - timedelta(days=uniform(18, 65)*365),
-            'sys_eff_to': event_date_time + timedelta(days=uniform(180, 365*5)),
-            'sys_eff_from': event_date_time,
-        }
+    for entity in entities:
+        entity['sys_eff_to'] = event_date_time + timedelta(days=uniform(180, 365*5))
+        entity['sys_eff_from'] = event_date_time
 
-        for field in ["sys_eff_from", "sys_eff_to", "date_of_birth"]:
-            entity[field] = entity[field].strftime("%Y-%m-%d %H:%M:%S")
+        for field in ["sys_eff_from", "sys_eff_to"]:
+            # entity[field] = entity[field].strftime("%Y-%m-%d %H:%M:%S")
+            # turns out that feast expects datetime panda fields to be timestamps
+            entity[field] = int(entity[field].timestamp())
+            # entity[field] = str(entity[field])
         producer.send(kafka_topic_name, json.dumps(entity).encode())
-        time.sleep(0.01)
+        time.sleep(0.5)
 
     iteration += 1
     time.sleep(5)
