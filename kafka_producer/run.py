@@ -40,7 +40,7 @@ except Exception as e:
     pass
 
 start = time.time()
-date_zero = datetime(2000, 1, 1, 12, 00, 00)
+date_zero = datetime(2020, 1, 1, 12, 00, 00)
 iteration = 0
 
 entities = [
@@ -59,7 +59,8 @@ entities = [
 while True:
 
     event_date_time = date_zero + timedelta(days=365.25*iteration)
-    for entity in entities:
+    for e in entities:
+        entity = {**e}
         entity['sys_eff_to'] = event_date_time + timedelta(days=uniform(180, 365*5))
         entity['sys_eff_from'] = event_date_time
 
@@ -68,7 +69,18 @@ while True:
             # turns out that feast expects datetime panda fields to be timestamps
             entity[field] = int(entity[field].timestamp())
             # entity[field] = str(entity[field])
-        producer.send(kafka_topic_name, json.dumps(entity).encode())
+        producer.send(
+            kafka_topic_name,
+            json.dumps(
+                # the flink push job directly pushes this payload,
+                # and the feast push endpoint directly passes the payload
+                # to the pandas.DataFrame constructor...
+                {
+                    data_field: [data_value]
+                    for data_field, data_value in entity.items()
+                }
+            ).encode()
+        )
         time.sleep(0.5)
 
     iteration += 1

@@ -13,10 +13,7 @@ def push(json_str):
         url="http://feast_service:8888/push",
         data=json.dumps({
             "push_source_name": "whcaent_ent_push_source",
-            "df": {
-                data_field: [data_value]
-                for data_field, data_value in json.loads(json_str).items()
-            },
+            "df": json.loads(json_str),
             "to": "online"
         }),
         headers={
