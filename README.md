@@ -1,9 +1,5 @@
 # Use
 
-> NOTE: the datetimes pushed from kafka are coming out as NaT...
-
-See the [flink_processor/README.md](./flink_processor/README.md) for some downloads that must be present there.
-
 `docker compose up -d`
 
 ## Test the pushservice
@@ -27,10 +23,6 @@ Or use the feast service's endpoint:
 
 ## Initiate the job
 
-<details><summary>PyFlink</summary>
-`docker exec -it ffpk_jobmanager /opt/flink/bin/flink run -py /work/run.py -d`
-</details>
-
 <details><summary>Java</summary>
 
 Package the job (from within `flink_processor/kafka_feast_bridge`):
@@ -49,6 +41,13 @@ Queue the job across:
 `docker exec -it -w /work/ ffpk_jobmanager flink run -d kafka_feast_bridge-1.0-SNAPSHOT.jar /work/job.properties`
 </details>
 
+
+<details><summary>PyFlink</summary>
+
+See the [flink_processor/README.md](./flink_processor/README.md) for changes that must be made to the flink image.
+
+`docker exec -it ffpk_jobmanager /opt/flink/bin/flink run -py /work/run.py -d`
+</details>
 
 Check the features:
 

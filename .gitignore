@@ -1,0 +1,5 @@
+dependency-reduced-poml.xml
+target
+kafka_2.12-3.5.1
+*.tgz
+*.tar.gz
